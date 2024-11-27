@@ -1,0 +1,45 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_stable_version:
+        type: number
+        description: New release version
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  publish_new_version:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller pyinstaller_versionfile python-osc rel websocket-client[optional] 
+
+      - name: Generate versioninfo
+        run: |
+          pyivf-make_version --source-format yaml --metadata-source .\resources\versioninfo.yml --outfile .\versioninfo.txt --version ${{ github.event.inputs.new_stable_version }}
+
+      - name: Build program
+        run: |
+          pyinstaller 'ton-chatbox.spec'
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.new_stable_version }}
+          fail_on_unmatched_files: true
+          body_path: ./.github/RELEASE_TEMPLATE
+          draft: true
+          files: |
+            ./dist/ToNChatbox.exe
