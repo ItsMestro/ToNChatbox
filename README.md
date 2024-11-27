@@ -6,8 +6,10 @@
 
 <div align="center">
 <p>Terrors of Nowhere lobby/round statistics chatbox tool.</p>
-<a href="/LICENSE"><img alt="License" src="https://img.shields.io/github/license/ItsMestro/ToNChatbox"></a> <a href="https://discord.mestro.cc"><img alt="Discord Server" src="https://discordapp.com/api/guilds/128856147162562560/widget.png?style=shield"></a> <a href="https://github.com/ItsMestro/ToNChatbox/releases/latest"><img alt="Latest Version" src="https://img.shields.io/github/v/release/ItsMestro/ToNChatbox?label=Latest%20Version"></a> <img alt="Total Downloads" src="https://img.shields.io/github/downloads/ItsMestro/ToNChatbox/ToNChatbox.exe?label=Downloads">
+<a href="/LICENSE"><img alt="License" src="https://img.shields.io/github/license/ItsMestro/ToNChatbox"></a> <a href="https://discord.mestro.cc"><img alt="Discord Server" src="https://discordapp.com/api/guilds/128856147162562560/widget.png?style=shield"></a> <a href="https://github.com/ItsMestro/ToNChatbox/releases/latest"><img alt="Latest Version" src="https://img.shields.io/github/v/release/ItsMestro/ToNChatbox?label=Latest%20Version"></a> <picture><img alt="Total Downloads" src="https://img.shields.io/github/downloads/ItsMestro/ToNChatbox/ToNChatbox.exe?label=Downloads"></picture>
 </div>
+
+<h3 align="center"><a href="https://github.com/ItsMestro/ToNChatbox/releases/latest">Download</a></h3>
 
 ---
 
