@@ -412,7 +412,6 @@ def render_page(page: int = 0) -> str:
                 "",
                 "Round Count",
                 "Page 1/2",
-                "",
                 f"Classic: {ToNData.CLASSIC} | Fog: {ToNData.FOG}",
                 f"Punished: {ToNData.PUNISHED} | Sabotage: {ToNData.SABOTAGE}",
                 f"Ghost: {ToNData.GHOST} | Cracked: {ToNData.CRACKED}",
