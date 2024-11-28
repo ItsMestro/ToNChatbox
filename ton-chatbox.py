@@ -410,7 +410,7 @@ def render_page(page: int = 0) -> str:
         out = "\n".join(
             [
                 "",
-                "Round Count",
+                "Rounds",
                 "Page 1/2",
                 "",
                 f"Classic: {ToNData.CLASSIC} | Fog: {ToNData.FOG}",
@@ -423,7 +423,7 @@ def render_page(page: int = 0) -> str:
         out = "\n".join(
             [
                 "",
-                "Round Count",
+                "Rounds",
                 "Page 2/2",
                 f"Bloodbath: {ToNData.BLOODBATH} | Double Trouble: {ToNData.DOUBLE_TROUBLE}",
                 f"EX: {ToNData.EX} | Unbound: {ToNData.UNBOUND}",
@@ -471,6 +471,7 @@ def run_osc():
         if ToNData.round_type is not ToNRoundType.PAGES:
             footer += f"Survivors: {ToNData.players_left} | "
         footer += f"Round Stuns: {ToNData.round_stun_all}"
+        ad = "github.nanolight.cc/ToNChatbox"
         if (
             ToNData.is_saboteur
             and ToNData.round_active
@@ -534,10 +535,14 @@ def run_osc():
                     footer,
                 ]
             )
+            if len(msg) + len(ad) < 144:
+                msg += f"\n{ad}"
         elif ToNData.round_active is False and len(ToNData.terror_history) > 0:
             msg = "\n".join([header, render_page(page)])
+            if len(msg) + len(ad) < 144:
+                msg += f"\n{ad}"
         else:
-            msg = header
+            msg = "\n".join([header, "", ad])
 
         if ToNData.opted_in:
             client.send_message("/chatbox/input", [msg, True, False])
