@@ -88,6 +88,7 @@ class ToNWebsocket:
         self.players_left: int = 0
         self.terror_history: list = []
         self.enrage_guess: str = ""
+        self.last_round: ToNRoundType = ToNRoundType.UNKNOWN
 
         # count variables
         self.CLASSIC: int = 0
@@ -175,6 +176,7 @@ def event_instance(data: Any) -> None:
     ToNData.terrors_command = 255
     ToNData.terror_history = []
     ToNData.enrage_guess = ""
+    ToNData.last_round = ToNRoundType.UNKNOWN
 
     ToNData.CLASSIC = 0
     ToNData.FOG = 0
@@ -224,6 +226,9 @@ def event_death(data: Any) -> None:
 def event_round_type(data: Any) -> None:
     try:
         ToNData.round_type = ToNRoundType(data["Value"])
+
+        if ToNData.round_type != ToNRoundType.UNKNOWN:
+            ToNData.last_round = ToNData.round_type
 
         if ToNData.round_type is ToNRoundType.FOG_ALTERNATE:
             ToNData.FOG += 1
@@ -412,7 +417,6 @@ def render_page(page: int = 0) -> str:
                 "",
                 "Rounds",
                 "Page 1/2",
-                "",
                 f"Classic: {ToNData.CLASSIC} | Fog: {ToNData.FOG}",
                 f"Punished: {ToNData.PUNISHED} | Sabotage: {ToNData.SABOTAGE}",
                 f"Ghost: {ToNData.GHOST} | Cracked: {ToNData.CRACKED}",
@@ -535,6 +539,10 @@ def run_osc():
                     footer,
                 ]
             )
+            if len(msg) + len(ad) < 144:
+                msg += f"\n{ad}"
+        elif ToNData.last_round is ToNRoundType.PUNISHED or ToNData.last_round is ToNRoundType.PAGES:
+            msg = "\n".join([header, "===============", "GET", "YOUR", "ITEMS", "==============="])
             if len(msg) + len(ad) < 144:
                 msg += f"\n{ad}"
         elif ToNData.round_active is False and len(ToNData.terror_history) > 0:
