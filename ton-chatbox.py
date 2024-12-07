@@ -12,7 +12,13 @@ import websocket
 from pythonosc import udp_client
 
 log = logging.getLogger("ToNChatbox")
-logging.basicConfig(level=logging.INFO)
+
+# Should never be commited
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] [%(levelname)s]: %(message)s",
+    datefmt="%m-%d-%Y %I:%M:%S",
+)
 
 # This code is all horribly made and really unprofessional but in my defense
 # I was never intending to release it publicly but here we are.
@@ -247,7 +253,7 @@ def event_round_type(data: Any) -> None:
             except AttributeError:
                 pass
     except ValueError:
-        log.debug("Unknown round type: %s", data)
+        log.debug("Unhandled round type: %s", data)
         ToNData.round_type = ToNRoundType.UNKNOWN
 
 
@@ -265,7 +271,7 @@ def event_terrors(data: Any) -> None:
 
 def event_stats(data: Any) -> None:
     if data["Name"] not in STATS_NAMES:
-        log.debug("Unhandled STATS event name: %s", data)
+        log.debug("Unhandled STATS event: %s", data)
 
     if data["Name"] == "PlayersOnline":
         ToNData.players_online = data["Value"]
@@ -292,8 +298,6 @@ def event_connected(data: Any) -> None:
 def event_tracker(data: Any) -> None:
     if data["event"] == "enemy_enraged":
         ToNData.enrage_guess = data["args"][0]
-    else:
-        log.debug(data)
 
 
 IGNORED_EVENTS = [
@@ -374,6 +378,7 @@ def on_message(ws, message):
 
         return unknown_event(data)
 
+    log.debug(data)
     func(data)
 
 
