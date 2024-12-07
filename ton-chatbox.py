@@ -1,14 +1,18 @@
 import json
+import logging
 import sys
 import threading
 import time
 from datetime import timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import rel
 import websocket
 from pythonosc import udp_client
+
+log = logging.getLogger("ToNChatbox")
+logging.basicConfig(level=logging.INFO)
 
 # This code is all horribly made and really unprofessional but in my defense
 # I was never intending to release it publicly but here we are.
@@ -243,7 +247,7 @@ def event_round_type(data: Any) -> None:
             except AttributeError:
                 pass
     except ValueError:
-        print(f"Unknown round type: {data}")
+        log.debug("Unknown round type: %s", data)
         ToNData.round_type = ToNRoundType.UNKNOWN
 
 
@@ -261,7 +265,7 @@ def event_terrors(data: Any) -> None:
 
 def event_stats(data: Any) -> None:
     if data["Name"] not in STATS_NAMES:
-        print(f"Unhandled STATS event name: {data}")
+        log.debug("Unhandled STATS event name: %s", data)
 
     if data["Name"] == "PlayersOnline":
         ToNData.players_online = data["Value"]
@@ -289,8 +293,7 @@ def event_tracker(data: Any) -> None:
     if data["event"] == "enemy_enraged":
         ToNData.enrage_guess = data["args"][0]
     else:
-        return
-        print(data)
+        log.debug(data)
 
 
 IGNORED_EVENTS = [
@@ -318,44 +321,43 @@ EVENTS = {
 }
 
 
-def to_json(message: str) -> Optional[Any]:
+def to_json(message: str) -> dict | None:
     try:
         return json.loads(message)
     except json.JSONDecodeError as e:
-        print("Error Decoding JSON")
-        print(e.msg)
+        log.error("Unable to decode JSON %s", e.msg)
+        return
 
 
 def unknown_event(data: Any) -> None:
-    print(f"Received unhandled event: {data['Type']}")
-    print(data)
+    log.debug("Received unhandled event: %s", data["Type"])
+    log.debug(data)
 
 
 def on_error(ws, error):
     if isinstance(error, ConnectionRefusedError):
         global connection_error_count
         if connection_error_count >= 5:
-            print("Unable to establish websocket connection")
+            log.warning("Unable to establish websocket connection")
             rel.abort()
         else:
             connection_error_count += 1
     else:
-        print(type(error))
-        print(error)
+        log.error("%s %s", type(error), error)
 
 
 def on_close(ws=None, close_status_code=None, close_msg=None):
-    print("Websocket connection closed")
+    log.info("Websocket connection closed")
     if close_status_code is not None:
-        print(f"Status Code: {close_status_code}")
+        log.warning("Status Code: %s", close_status_code)
     if close_msg is not None:
-        print(f"Message: {close_msg}")
+        log.warning("Message: %s", close_msg)
 
 
 def on_open(ws):
     global connection_error_count
     connection_error_count = 0
-    print("Successfully connected to websocket")
+    log.info("Successfully connected to websocket")
 
 
 def on_message(ws, message):
@@ -377,7 +379,7 @@ def on_message(ws, message):
 
 def run_websocket():
     global ready_to_exit
-    print("Trying to connect to websocket")
+    log.info("Trying to connect to websocket")
     # websocket.enableTrace(True)
     ws = websocket.WebSocketApp(
         "ws://localhost:11398",
@@ -538,8 +540,13 @@ def run_osc():
                     footer,
                 ]
             )
-        elif ToNData.last_round is ToNRoundType.PUNISHED or ToNData.last_round is ToNRoundType.PAGES:
-            msg = "\n".join([header, "===============", "GET", "YOUR", "ITEMS", "==============="])
+        elif (
+            ToNData.last_round is ToNRoundType.PUNISHED
+            or ToNData.last_round is ToNRoundType.PAGES
+        ):
+            msg = "\n".join(
+                [header, "===============", "GET", "YOUR", "ITEMS", "==============="]
+            )
         elif ToNData.round_active is False and len(ToNData.terror_history) > 0:
             msg = "\n".join([header, render_page(page)])
         else:
