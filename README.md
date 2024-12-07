@@ -28,7 +28,7 @@ With that said. Here's the current list of features:
     > Due to the line limit of chatboxes terrors might get cut off at the bottom
   - Display how many of each __round type__ has been played
   - Display how many __moon rounds__ have been played
-  - Remind people to grab their items after __sabotage__ or __8 pages__ rounds
+  - Remind people to grab their items after __punished__ or __8 pages__ rounds
 - <ins>Round</ins>
   - Display __round type__
   - Display __map__
