@@ -221,7 +221,7 @@ def event_round_active(data: Any) -> None:
         ToNData.players_left = ToNData.players_online
     else:
         ToNData.is_saboteur = False
-
+        ToNData.add_terror()
 
 def event_opted_in(data: Any) -> None:
     ToNData.opted_in = data["Value"]
@@ -265,10 +265,8 @@ def event_location(data: Any) -> None:
 
 def event_terrors(data: Any) -> None:
     ToNData.terrors_command = data["Command"]
-    ToNData.terrors_name = data["DisplayName"]
-
-    if ToNData.terrors_command == 0 or ToNData.terrors_command == 1:
-        ToNData.add_terror()
+    if ToNData.terrors_command != 255:
+        ToNData.terrors_name = data["DisplayName"]
 
 
 def event_stats(data: Any) -> None:
