@@ -15,7 +15,7 @@ log = logging.getLogger("ToNChatbox")
 
 # Should never be commited
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="[%(asctime)s] [%(levelname)s]: %(message)s",
     datefmt="%m-%d-%Y %I:%M:%S",
 )
