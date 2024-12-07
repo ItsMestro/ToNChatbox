@@ -15,7 +15,7 @@ log = logging.getLogger("ToNChatbox")
 
 # Should never be commited
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="[%(asctime)s] [%(levelname)s]: %(message)s",
     datefmt="%m-%d-%Y %I:%M:%S",
 )
@@ -377,8 +377,9 @@ def on_message(ws, message):
             return
 
         return unknown_event(data)
-
-    log.debug(data)
+    
+    if data["Type"] != "TRACKER":
+        log.debug(data)
     func(data)
 
 
