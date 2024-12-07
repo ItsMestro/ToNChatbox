@@ -219,6 +219,8 @@ def event_round_active(data: Any) -> None:
         ToNData.enrage_guess = ""
         ToNData.lobby_rounds += 1
         ToNData.players_left = ToNData.players_online
+    else:
+        ToNData.is_saboteur = False
 
 
 def event_opted_in(data: Any) -> None:
