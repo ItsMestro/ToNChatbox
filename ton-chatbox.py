@@ -76,6 +76,15 @@ class ToNRoundType(Enum):
         return out.title()
 
 
+# Bit of an awkward solution but works for now
+#
+# Lisa has ID 18 but I don't currently use IDs.
+# Would probably be the smarter move in the future.
+#
+# Sonics name is just an enrage "variant"
+NAME_OVERRIDES: dict[str, str] = {"Sonic?": "Faker", " ": "Lisa"}
+
+
 class ToNWebsocket:
     def __init__(self):
         # event variables
@@ -223,6 +232,7 @@ def event_round_active(data: Any) -> None:
         ToNData.is_saboteur = False
         ToNData.add_terror()
 
+
 def event_opted_in(data: Any) -> None:
     ToNData.opted_in = data["Value"]
 
@@ -266,7 +276,11 @@ def event_location(data: Any) -> None:
 def event_terrors(data: Any) -> None:
     ToNData.terrors_command = data["Command"]
     if ToNData.terrors_command != 255:
-        ToNData.terrors_name = data["DisplayName"]
+        if not isinstance(data["Names"], list):
+            return
+        ToNData.terrors_name = " | ".join(
+            NAME_OVERRIDES.get(x, x) for x in data["Names"]
+        )
 
 
 def event_stats(data: Any) -> None:
@@ -377,7 +391,7 @@ def on_message(ws, message):
             return
 
         return unknown_event(data)
-    
+
     if data["Type"] != "TRACKER":
         log.debug(data)
     func(data)
