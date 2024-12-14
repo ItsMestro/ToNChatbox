@@ -574,7 +574,7 @@ def run_osc():
 
         if ToNData.opted_in:
             client.send_message("/chatbox/input", [msg, True, False])
-        ready_to_exit.wait(1.5)
+        ready_to_exit.wait(2)
 
 
 if __name__ == "__main__":
