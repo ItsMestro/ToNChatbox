@@ -276,8 +276,13 @@ def event_location(data: Any) -> None:
 def event_terrors(data: Any) -> None:
     ToNData.terrors_command = data["Command"]
     if ToNData.terrors_command != 255:
+        if data["Names"] is None:
+            ToNData.terrors_name = "???"
+            return
+
         if not isinstance(data["Names"], list):
             return
+
         ToNData.terrors_name = " | ".join(
             NAME_OVERRIDES.get(x, x) for x in data["Names"]
         )
