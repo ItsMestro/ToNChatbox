@@ -79,7 +79,7 @@ cd ToNChatbox
 Install dependencies:
 
 ```shell
-pip install python-osc rel websocket-client[optional]
+pip install -r requirements.txt
 ```
 
 Run the script:
