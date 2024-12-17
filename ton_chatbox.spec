@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['ton-chatbox.py'],
+    ['ton_chatbox.py'],
     pathex=[],
     binaries=[],
     datas=[],

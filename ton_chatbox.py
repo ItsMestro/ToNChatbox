@@ -6,16 +6,28 @@ import time
 from datetime import timedelta
 from enum import Enum
 from typing import Any
+import ctypes
+import argparse
 
 import rel
+import requests
 import websocket
 from pythonosc import udp_client
 
+# Is automatically bumped by release action
+_VERSION = "1.1.1"
+
 log = logging.getLogger("ToNChatbox")
 
-# Should never be commited
+argparser = argparse.ArgumentParser(description="ToNChatbox")
+
+argparser.add_argument("--debug", action="store_true")
+
+args = argparser.parse_args()
+print(args)
+
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG if args.debug else logging.INFO,
     format="[%(asctime)s] [%(levelname)s]: %(message)s",
     datefmt="%m-%d-%Y %I:%M:%S",
 )
@@ -276,8 +288,13 @@ def event_location(data: Any) -> None:
 def event_terrors(data: Any) -> None:
     ToNData.terrors_command = data["Command"]
     if ToNData.terrors_command != 255:
+        if data["Names"] is None:
+            ToNData.terrors_name = "???"
+            return
+
         if not isinstance(data["Names"], list):
             return
+
         ToNData.terrors_name = " | ".join(
             NAME_OVERRIDES.get(x, x) for x in data["Names"]
         )
@@ -577,7 +594,39 @@ def run_osc():
         ready_to_exit.wait(2)
 
 
+def check_for_update() -> None:
+    with requests.Session() as session:
+        session.headers = {
+            "User-Agent": f"ToNChatbox/{_VERSION}",
+            "Accept": "application/vnd.github+json",
+        }
+        r = session.get(
+            "https://api.github.com/repos/ItsMestro/ToNChatbox/releases/latest"
+        )
+
+    if not r.ok:
+        log.warning("Unable to check for new version of the app")
+
+    data: dict = json.loads(r.content)
+
+    new_version: str = data.get("tag_name", "")
+    if new_version != _VERSION:
+        log.info(
+            "\n".join(
+                [
+                    f"There's a new version of ToNChatbox available! Current: {_VERSION} > Latest: {new_version}",
+                    "Grab the latest one here: https://github.com/ItsMestro/ToNChatbox/releases/latest",
+                ]
+            )
+        )
+
+
 if __name__ == "__main__":
+    ctypes.windll.kernel32.SetConsoleTitleW(f"ToNChatbox {_VERSION}")
+
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        check_for_update()
+
     thread = threading.Thread(target=run_osc)
     thread.start()
 

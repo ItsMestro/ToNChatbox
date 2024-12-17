@@ -79,13 +79,13 @@ cd ToNChatbox
 Install dependencies:
 
 ```shell
-pip install python-osc rel websocket-client[optional]
+pip install -r requirements.txt
 ```
 
 Run the script:
 
 ```shell
-python ton-chatbox.py
+python ton_chatbox.py
 ```
 
 ---
@@ -102,7 +102,7 @@ cd ToNChatbox
 Install dependencies:
 
 ```shell
-pip install pyinstaller pyinstaller_versionfile python-osc rel websocket-client[optional]
+pip install -r build-requirements.txt
 ```
 
 Generate a version file:
@@ -114,7 +114,7 @@ pyivf-make_version --source-format yaml --metadata-source .\\resources\\versioni
 Build Binary:
 
 ```shell
-pyinstaller ton-chatbox.spec
+pyinstaller ton_chatbox.spec
 ```
 
 ---
