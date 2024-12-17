@@ -7,6 +7,7 @@ from datetime import timedelta
 from enum import Enum
 from typing import Any
 import ctypes
+import argparse
 
 import rel
 import requests
@@ -18,9 +19,15 @@ _VERSION = "1.1.1"
 
 log = logging.getLogger("ToNChatbox")
 
-# Should never be commited
+argparser = argparse.ArgumentParser(description="ToNChatbox")
+
+argparser.add_argument("--debug", action="store_true")
+
+args = argparser.parse_args()
+print(args)
+
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG if args.debug else logging.INFO,
     format="[%(asctime)s] [%(levelname)s]: %(message)s",
     datefmt="%m-%d-%Y %I:%M:%S",
 )

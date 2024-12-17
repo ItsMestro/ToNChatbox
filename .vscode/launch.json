@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: ton_chatbox.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/ton_chatbox.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--debug"
+            ]
+        }
+    ]
+}
