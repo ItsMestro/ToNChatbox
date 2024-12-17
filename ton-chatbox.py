@@ -6,11 +6,17 @@ import time
 from datetime import timedelta
 from enum import Enum
 from typing import Any
+import ctypes
 
 import rel
+import requests
 import websocket
 from pythonosc import udp_client
 
+# Is automatically bumped by release action
+_VERSION = "1.1.1"
+
+ctypes.windll.kernel32.SetConsoleTitleW(f"ToNChatbox {_VERSION}")
 log = logging.getLogger("ToNChatbox")
 
 # Should never be commited
@@ -582,7 +588,37 @@ def run_osc():
         ready_to_exit.wait(2)
 
 
+def check_for_update() -> None:
+    with requests.Session() as session:
+        session.headers = {
+            "User-Agent": f"ToNChatbox/{_VERSION}",
+            "Accept": "application/vnd.github+json",
+        }
+        r = session.get(
+            "https://api.github.com/repos/ItsMestro/ToNChatbox/releases/latest"
+        )
+
+    if not r.ok:
+        log.warning("Unable to check for new version of the app")
+
+    data: dict = json.loads(r.content)
+
+    new_version: str = data.get("tag_name", "")
+    if new_version != _VERSION:
+        log.info(
+            "\n".join(
+                [
+                    f"There's a new version of ToNChatbox available! Current: {_VERSION} > Latest: {new_version}",
+                    "Grab the latest one here: https://github.com/ItsMestro/ToNChatbox/releases/latest",
+                ]
+            )
+        )
+
+
 if __name__ == "__main__":
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        check_for_update()
+
     thread = threading.Thread(target=run_osc)
     thread.start()
 
