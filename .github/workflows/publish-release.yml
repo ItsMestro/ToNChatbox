@@ -1,33 +1,46 @@
 name: Publish Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      new_stable_version:
-        type: number
-        description: New release version
-        required: true
+  pull_request:
+    types: closed
 
 permissions:
   contents: write
 
 jobs:
-  publish_new_version:
+  publish_new_release:
+    name: Publish New Release
     runs-on: windows-latest
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'automated/release_bump/')
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
 
       - name: Install dependencies
         run: |
-          pip install pyinstaller pyinstaller_versionfile python-osc rel websocket-client[optional] 
+          pip install pyinstaller pyinstaller_versionfile
+          pip install -r requirements.txt
+
+      - name: Save PR body
+        shell: bash
+        run: |
+          cat >pr_body.txt <<EOL
+          ${{ github.event.pull_request.body }}
+          EOL
+
+      - name: Create changelog
+        id: make_changelog
+        run: |
+          python .github/workflows/scripts/make_changelog.py
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
 
       - name: Generate versioninfo
         run: |
-          pyivf-make_version --source-format yaml --metadata-source .\resources\versioninfo.yml --outfile .\versioninfo.txt --version ${{ github.event.inputs.new_stable_version }}
+          pyivf-make_version --source-format yaml --metadata-source .\resources\versioninfo.yml --outfile .\versioninfo.txt --version "${{ steps.make_changelog.outputs.version }}"
 
       - name: Build program
         run: |
@@ -37,9 +50,8 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.new_stable_version }}
+          tag_name: ${{ steps.make_changelog.outputs.version }}
           fail_on_unmatched_files: true
           body_path: ./.github/RELEASE_TEMPLATE
-          draft: true
           files: |
             ./dist/ToNChatbox.exe

@@ -1,0 +1,45 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_version:
+        type: number
+        description: New release version
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  pr_version_bump:
+    name: Bump version with PR
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Update version number from input
+        run: |
+          python .github/workflows/scripts/bump_version.py
+        env:
+          NEW_VERSION: ${{ github.event.inputs.new_version }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: Version bump to ${{ github.event.inputs.new_version }}
+          sign-commits: true
+          title: Version bump to ${{ github.event.inputs.new_version }}
+          body: |
+            This is an automated PR for bumping release version.
+            Provide changelog below.
+            
+            ---
+            
+            ## What's Changed
+          branch: "automated/release_bump/${{ github.event.inputs.new_version }}"

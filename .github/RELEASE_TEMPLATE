@@ -6,3 +6,4 @@ Make sure you have [ToNSaveManager](https://github.com/ChrisFeline/ToNSaveManage
 Just download the `ToNChatbox.exe` file and place it anywhere, then run it.
 
 There's currently no GUI or other settings but a console with some basic output is displayed while running. Program will automatically close when `ToN Save Manager` is closed.
+
