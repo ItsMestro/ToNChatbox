@@ -1,0 +1,4 @@
+pyinstaller>=6.11.1
+pyinstaller_versionfile>=3.0.0
+
+-r requirements.txt

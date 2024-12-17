@@ -21,8 +21,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pyinstaller pyinstaller_versionfile
-          pip install -r requirements.txt
+          pip install -r build-requirements.txt
 
       - name: Save PR body
         shell: bash
@@ -44,7 +43,7 @@ jobs:
 
       - name: Build program
         run: |
-          pyinstaller 'ton-chatbox.spec'
+          pyinstaller 'ton_chatbox.spec'
 
       - name: Create Release
         id: create_release

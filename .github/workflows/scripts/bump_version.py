@@ -8,7 +8,7 @@ def repl(match: re.Match[str]) -> str:
     return f'_VERSION = "{new_version}"'
 
 
-with open("ton-chatbox.py", encoding="utf-8") as fp:
+with open("ton_chatbox.py", encoding="utf-8") as fp:
     new_contents, found = re.subn(
         pattern=r'^_VERSION = "(?P<version>[^"]*)"$',
         repl=repl,
@@ -21,5 +21,5 @@ if not found:
     print("Couldn't find `_VERSION` line!")
     sys.exit(1)
 
-with open("ton-chatbox.py", "w", encoding="utf-8", newline="\n") as fp:
+with open("ton_chatbox.py", "w", encoding="utf-8", newline="\n") as fp:
     fp.write(new_contents)

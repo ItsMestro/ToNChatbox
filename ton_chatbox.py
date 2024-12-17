@@ -16,7 +16,6 @@ from pythonosc import udp_client
 # Is automatically bumped by release action
 _VERSION = "1.1.1"
 
-ctypes.windll.kernel32.SetConsoleTitleW(f"ToNChatbox {_VERSION}")
 log = logging.getLogger("ToNChatbox")
 
 # Should never be commited
@@ -616,6 +615,8 @@ def check_for_update() -> None:
 
 
 if __name__ == "__main__":
+    ctypes.windll.kernel32.SetConsoleTitleW(f"ToNChatbox {_VERSION}")
+
     if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
         check_for_update()
 
