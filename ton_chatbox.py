@@ -15,7 +15,7 @@ import websocket
 from pythonosc import udp_client
 
 # Is automatically bumped by release action
-_VERSION = "1.2.1"
+_VERSION = "1.2.2"
 
 log = logging.getLogger("ToNChatbox")
 
@@ -24,7 +24,6 @@ argparser = argparse.ArgumentParser(description="ToNChatbox")
 argparser.add_argument("--debug", action="store_true")
 
 args = argparser.parse_args()
-print(args)
 
 logging.basicConfig(
     level=logging.DEBUG if args.debug else logging.INFO,
