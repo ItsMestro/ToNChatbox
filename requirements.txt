@@ -1,0 +1,6 @@
+python-osc>=1.9.0
+python-socks>=2.5.3
+rel>=0.4.9.19
+requests>=2.32.3
+websocket-client>=1.8.0
+wsaccel>=0.6.7
