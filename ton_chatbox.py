@@ -1,3 +1,5 @@
+import argparse
+import ctypes
 import json
 import logging
 import sys
@@ -6,8 +8,6 @@ import time
 from datetime import timedelta
 from enum import Enum
 from typing import Any
-import ctypes
-import argparse
 
 import rel
 import requests
@@ -49,7 +49,8 @@ ready_to_exit = threading.Event()
 
 
 class ToNRoundType(Enum):
-    UNKNOWN = 0
+    INTERMISSION = 0
+
     CLASSIC = 1
     FOG = 2
     PUNISHED = 3
@@ -73,7 +74,11 @@ class ToNRoundType(Enum):
 
     RUN = 104
     PAGES = 105
+
+    GIGABYTE = 106
     COLD_NIGHT = 107
+
+    CUSTOM = 999
 
     def prettify(self) -> str:
         if self is ToNRoundType.PAGES:
@@ -104,7 +109,7 @@ class ToNWebsocket:
         self.round_active: bool = False
         self.opted_in: bool = False
         self.is_saboteur: bool = False
-        self.round_type: ToNRoundType = ToNRoundType.UNKNOWN
+        self.round_type: ToNRoundType = ToNRoundType.INTERMISSION
         self.location: str = ""
         self.terrors_name: str = ""
         self.terrors_command: int = 255
@@ -118,7 +123,7 @@ class ToNWebsocket:
         self.players_left: int = 0
         self.terror_history: list = []
         self.enrage_guess: str = ""
-        self.last_round: ToNRoundType = ToNRoundType.UNKNOWN
+        self.last_round: ToNRoundType = ToNRoundType.INTERMISSION
 
         # count variables
         self.CLASSIC: int = 0
@@ -139,6 +144,9 @@ class ToNWebsocket:
         self.SOLSTICE: int = 0
         self.RUN: int = 0
         self.PAGES: int = 0
+        self.GIGABYTE: int = 0
+        self.COLD_NIGHT: int = 0
+        self.CUSTOM: int = 0
 
     def get_time_string(self) -> str:
         time_string = str(timedelta(seconds=int(time.time() - self.instance_start)))
@@ -200,13 +208,13 @@ def event_instance(data: Any) -> None:
     ToNData.lobby_rounds = 0
     ToNData.round_stun_all = 0
     ToNData.players_left = 0
-    ToNData.round_type = ToNRoundType.UNKNOWN
+    ToNData.round_type = ToNRoundType.INTERMISSION
     ToNData.location = ""
     ToNData.terrors_name = ""
     ToNData.terrors_command = 255
     ToNData.terror_history = []
     ToNData.enrage_guess = ""
-    ToNData.last_round = ToNRoundType.UNKNOWN
+    ToNData.last_round = ToNRoundType.INTERMISSION
 
     ToNData.CLASSIC = 0
     ToNData.FOG = 0
@@ -226,6 +234,9 @@ def event_instance(data: Any) -> None:
     ToNData.SOLSTICE = 0
     ToNData.RUN = 0
     ToNData.PAGES = 0
+    ToNData.GIGABYTE = 0
+    ToNData.COLD_NIGHT = 0
+    ToNData.CUSTOM = 0
 
 
 def event_alive(data: Any) -> None:
@@ -260,7 +271,7 @@ def event_round_type(data: Any) -> None:
     try:
         ToNData.round_type = ToNRoundType(data["Value"])
 
-        if ToNData.round_type != ToNRoundType.UNKNOWN:
+        if ToNData.round_type != ToNRoundType.INTERMISSION:
             ToNData.last_round = ToNData.round_type
 
         if ToNData.round_type is ToNRoundType.FOG_ALTERNATE:
@@ -277,7 +288,7 @@ def event_round_type(data: Any) -> None:
                 pass
     except ValueError:
         log.debug("Unhandled round type: %s", data)
-        ToNData.round_type = ToNRoundType.UNKNOWN
+        ToNData.round_type = ToNRoundType.INTERMISSION
 
 
 def event_location(data: Any) -> None:
@@ -467,8 +478,8 @@ def render_page(page: int = 0) -> str:
                 "",
                 "Round Count",
                 "Page 2/2",
-                f"Bloodbath: {ToNData.BLOODBATH} | Double Trouble: {ToNData.DOUBLE_TROUBLE}",
-                f"EX: {ToNData.EX} | Unbound: {ToNData.UNBOUND}",
+                f"Bloodbath: {ToNData.BLOODBATH} | DT: {ToNData.DOUBLE_TROUBLE}",
+                f"Misc: {ToNData.EX + ToNData.RUN + ToNData.PAGES + ToNData.GIGABYTE + ToNData.COLD_NIGHT + ToNData.CUSTOM} | Unbound: {ToNData.UNBOUND}",
                 f"Midnight: {ToNData.MIDNIGHT} | Alternate: {ToNData.ALTERNATE}",
             ]
         )
