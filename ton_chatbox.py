@@ -15,7 +15,7 @@ import websocket
 from pythonosc import udp_client
 
 # Is automatically bumped by release action
-_VERSION = "1.2.2"
+_VERSION = "1.2.3"
 
 log = logging.getLogger("ToNChatbox")
 
